@@ -1,0 +1,7 @@
+pandas
+pyautogui
+pyperclip
+pyinstaller
+python-dotenv
+openpyxl
+tk
