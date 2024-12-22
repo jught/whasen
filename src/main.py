@@ -51,7 +51,7 @@ def enviar_mensaje(numero, mensaje):
     print("Mensaje enviado correctamente.")
 
 
-def main(excel_file = "pruebaExcel_macu.xlsm"):
+def main(excel_file = "../mssgs.xlsm"):
     # Leer el archivo Excel
     df = pd.read_excel(excel_file)
 
@@ -65,9 +65,7 @@ def main(excel_file = "pruebaExcel_macu.xlsm"):
 
     print("\nProceso completado.")
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     import sys
-    file = None
-    if len(sys.argv) >= 2:
-        file = sys.argv[1]
+    file = sys.argv[1] if len(sys.argv) >= 2 and sys.argv[1] else "mssgs.xlsx"
     main(file)
