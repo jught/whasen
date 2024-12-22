@@ -1,71 +1,45 @@
-import pyautogui
-import pyperclip
-import time
-import pandas as pd
-import urllib.parse
-import os
+from whatsapp import enviar_mensaje
+from utils import leer_excel
+import sys
 
-def open_whatsapp(numero):
-    # Crear el enlace usando whatsapp://
-    link = f'whatsapp://send?phone={numero}'
-    print(f"\nEnviando mensaje a {numero}...")
-    print(f"Enlace generado: {link}")
-    
-    # Abrir el enlace correctamente con comillas dobles
-    resultado = os.system(f'start "" "{link}"')
-    print(f"Resultado de abrir enlace: {resultado}")
-    # Verificar si el enlace se abrió correctamente
-    if resultado != 0:
-       print(f"Error al abrir WhatsApp para el número {numero}.")
-
-def go_to_insert_text():
-    for i in range(11):
-        pyautogui.press("tab", interval=0.1)
-
-def close_whatsapp():
-    print("Cerrando WhatsApp Desktop...")
-    os.system("taskkill /IM WhatsApp.exe /F")
-def insert_msg(msg):
-    pyperclip.copy(msg)  # Copia el mensaje al portapapeles
-    pyautogui.hotkey("ctrl", "v")  # Pega el mensaje con Ctrl + V)
-    pyautogui.press("enter")
-
-def enviar_mensaje(numero, mensaje):
-    # Crear el enlace usando whatsapp://
-    open_whatsapp(numero)
-
-    # Esperar que se abra WhatsApp
-    print("Esperando que se abra WhatsApp...")
-    time.sleep(5)
-
-    go_to_insert_text()
-    print(mensaje)
-    insert_msg(mensaje)
-    
-    time.sleep(1)
-	
-    close_whatsapp()
-    
-    # Esperar un poco antes de pasar al siguiente
-    time.sleep(3)
-    print("Mensaje enviado correctamente.")
-
-
-def main(excel_file = "../mssgs.xlsm"):
-    # Leer el archivo Excel
-    df = pd.read_excel(excel_file)
+def main(excel_file="mssgs.xlsx", ntabs = 11):
+    df = leer_excel(excel_file)
+    if df is None:
+        print("No se pudo cargar el archivo Excel.")
+        return
 
     print("Iniciando envío de mensajes...")
-
-    # Iterar sobre los contactos y enviar mensajes
-    for index, row in df.iterrows():
+    for _, row in df.iterrows():
         numero = str(row['Telefono'])
         mensaje = row['Mensaje']
-        enviar_mensaje(numero, mensaje)    
+        enviar_mensaje(numero, mensaje, ntabs)
 
     print("\nProceso completado.")
 
-if __name__ == '__main__':
-    import sys
-    file = sys.argv[1] if len(sys.argv) >= 2 and sys.argv[1] else "mssgs.xlsx"
-    main(file)
+import sys
+import os
+
+def obtener_argumentos():
+    ntabs = 11  # Valor por defecto
+    file = "./mssgs.xlsx"  # Archivo por defecto
+
+    # Si hay argumentos
+    if len(sys.argv) > 1:
+        args = sys.argv[1:]  # Obtener los argumentos (excluyendo el nombre del script)
+
+        # Identificar cuál es el número de pestañas (entero) y cuál es el archivo
+        for arg in args:
+            if arg.isdigit():
+                ntabs = int(arg)  # Asignar el valor como entero
+            elif os.path.exists(arg):
+                file = arg  # Asignar el archivo si existe en el sistema
+
+    return ntabs, file
+
+
+# Ejemplo de uso
+if __name__ == "__main__":
+    ntabs, file = obtener_argumentos()
+    print(f"Número de pestañas: {ntabs}")
+    print(f"Archivo: {file}")
+    main(file, ntabs)
