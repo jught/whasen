@@ -1,0 +1,7 @@
+2024-12-23 22:31:57,213 - INFO - Reading Excel file: ./mssgs.xlsx
+2024-12-23 22:38:56,115 - ERROR - Please provide an Excel file path.
+2024-12-23 22:39:03,829 - INFO - Reading Excel file: ./mssgs.xlsx
+2024-12-23 22:39:04,003 - INFO - Excel file loaded successfully!
+2024-12-23 22:39:18,572 - INFO - Reading Excel file: ./msslgs.xlsx
+2024-12-23 22:39:18,573 - ERROR - Failed to read Excel file: [Errno 2] No such file or directory: './msslgs.xlsx'
+2024-12-23 22:39:18,573 - ERROR - Failed to load Excel file.
