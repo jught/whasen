@@ -1,83 +1,67 @@
-from svgwrite import Drawing
-from svgwrite.container import Group
-from PIL import Image
-import cairosvg
-import io
+from myicon.myicon import MyIcon
 
-def convertir_svg_a_ico(svg_path, output_ico):
-    scale = 6
-    
-    # Convertir SVG a PNG de alta resolución
-    png_bytes = cairosvg.svg2png(url=svg_path, output_width=256*scale, output_height=256*scale)
-    img = Image.open(io.BytesIO(png_bytes))
-    
-    # Recortar bordes vacíos automáticamente
-    img = img.crop(img.getbbox())  # TRIM del espacio vacío
-    
-    # Redimensionar a 256x256 para garantizar tamaño correcto
-    img = img.resize((256, 256), Image.LANCZOS)
-    
-    # Guardar solo la versión grande del icono
-    img.save(output_ico, format='ICO', sizes=[(256, 256)])
-    print(f"Icono guardado correctamente como: {output_ico}")
+def create_logo(width=900, height=700, font_size=80, bg_color="skyblue", stroke_color="#1C6EA4", stroke_width = 14):
+    """
+    Create and save the envelope logo with a background.
+    """
+    icon = MyIcon(
+        width=width, height=height, 
+        path='./src/logo/whasen_logo', 
+        bg_color=bg_color, stroke_color=stroke_color,
+        stroke_width = stroke_width
+    )
+    icon.draw_background(radius=70, transparency=1.0)
+    icon.envelope.draw()
+    icon.draw_envelope_lines(stroke_width=stroke_width*2)
+    if font_size > 0:
+        icon.draw_text(font_size=font_size)
+    icon.svg()
+    icon.ico(scale=10)
 
 
-def draw_envelope(dwg):
-    envelope_group = Group(id='envelope')
-    
-    envelope_group.add(dwg.rect(
-        insert=(100, 300),
-        size=(300, 150),
-        fill="none",
-        stroke="black",
-        stroke_width=8
+def create_logo_simple(width=1024, height=1024, font_size=500, bg_color="#1C6EA4"):
+    """
+    Create and save a simple logo with a large 'W' in the center.
+    """
+    icon = MyIcon(
+        width=width, height=height, 
+        path='./src/logo/whasen_logo_simple', 
+        bg_color=bg_color, stroke_color="white",
+        stroke_width=0  # No stroke for simplicity
+    )
+    icon.draw_background(radius=70, transparency=1.0)
+
+    # Añadir texto grande 'W' centrado
+    icon.text_group.replace_group()
+    icon.text_group.group.add(icon.dwg.text(
+        'W',
+        insert=(width * 0.5, height * 0.6),  # Centrado en el lienzo
+        fill="white",
+        font_size=f'{font_size}px',
+        font_family='Georgia',  # Fuente chula y llamativa
+        font_weight='bold',
+        text_anchor='middle'
     ))
-    
-    envelope_group.add(dwg.polyline(
-        points=[(100, 450), (250, 300), (400, 450)],
-        fill="none",
-        stroke="#58D7DF",
-        stroke_width=8
-    ))
-    
-    envelope_group.add(dwg.line(
-        start=(100, 300),
-        end=(100, 450),
-        stroke="#58D7DF",
-        stroke_width=8
-    ))
-    
-    envelope_group.add(dwg.line(
-        start=(400, 300),
-        end=(400, 450),
-        stroke="#58D7DF",
-        stroke_width=8
-    ))
-    
-    dwg.add(envelope_group)
-    return dwg
+    icon.text_group.add_to_dwg()
 
-
-def draw_text(dwg):
-    text_group = Group(id='text')
-    text_group.add(dwg.text(
-        'HASEN',
-        insert=(180, 425),
-        fill='black',
-        font_size='40px',
-        font_family='Arial',
-        font_weight='normal'
-    ))
-    dwg.add(text_group)
-    return dwg
-
-
-def create_logo():
-    dwg = Drawing(size=(900, 700), profile='tiny')
-    draw_envelope(dwg).saveas('./envelope.svg')
-    draw_text(dwg).saveas('./whasen_logo.svg')
+    icon.svg()
+    icon.ico(scale=10)
 
 
 if __name__ == "__main__":
-    create_logo()
-    convertir_svg_a_ico("envelope.svg", "whasen_logo.ico")
+    try:
+        # Crear logo normal
+        create_logo(
+            1024, 
+            1024, 
+            font_size=100, 
+            bg_color="#F5F5F5", 
+            stroke_color="#333333", 
+            stroke_width=35
+        )
+        
+        # Crear logo simple con 'W'
+        create_logo_simple(1024, 1024, font_size=700, bg_color="#4B89DC")  # Fondo azul oscuro
+        print("Simple logo created and saved successfully.")
+    except Exception as e:
+        print(f"Error: {e}")
