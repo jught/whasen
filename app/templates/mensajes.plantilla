@@ -1,0 +1,4 @@
+{
+    "plantilla": "Bienvenido al sistema, <nombre>. Su número de teléfono es <telefono>.",
+    "variables": ["<nombre>", "<telefono>"]
+}
