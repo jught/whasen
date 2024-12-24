@@ -1,32 +1,32 @@
-import sys
 import pandas as pd
 import logging
+import os
+from dotenv import load_dotenv
+
+# Cargar variables de entorno desde .env
+load_dotenv()
+EXCEL_FILE_PATH = os.getenv('EXCEL_FILE_PATH')
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("app.log"),  # Guarda en app.log
-        logging.StreamHandler()           # Muestra en consola
+        logging.FileHandler("app.log"),
+        logging.StreamHandler()
     ]
 )
 
-def leer_excel(file_path):
+def leer_excel(file_path=None):
+    """
+    Lee un archivo Excel. Si no se proporciona un archivo, usa el de la configuración (.env).
+
+    :param file_path: Ruta opcional al archivo Excel.
+    :return: DataFrame de pandas o None si falla.
+    """
+    path = file_path or EXCEL_FILE_PATH
     try:
-        logging.info(f"Reading Excel file: {file_path}")
-        return pd.read_excel(file_path)
+        logging.info(f"Leyendo archivo Excel: {path}")
+        return pd.read_excel(path)
     except Exception as e:
-        logging.error(f"Failed to read Excel file: {e}")
+        logging.error(f"Error al leer el archivo Excel: {e}")
         return None
-    
-# Bloque para testear utils.py de forma independiente
-if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        file_path = sys.argv[1]
-        df = leer_excel(file_path)
-        if df is not None:
-            logging.info("Excel file loaded successfully!")
-            print(df.head())  # Muestra las primeras filas
-        else:
-            logging.error("Failed to load Excel file.")
-    else:
-        logging.error("Please provide an Excel file path.")

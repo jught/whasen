@@ -8,3 +8,5 @@ tk
 pillow
 cairosvg
 svgwrite
+pytest
+python-dotenv
